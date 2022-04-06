@@ -1,0 +1,76 @@
+<html>
+    <head>
+        <script src="example.js"></script>
+        <style>
+            #lattice {
+                height: 100px;
+                width: 50%;
+            }
+            #lattice table {
+                height: 100%;
+                width: 100%;
+                background: #aaa;
+                border-spacing: 2px;
+            }
+            #lattice table td {
+                background: #ccc;
+                position: relative;
+            }
+            #lattice table td div {
+                background: #aaf;
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                height: 0%;
+            }
+            #lattice table caption {
+                caption-side: bottom;
+                text-align: right;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="lattice">
+            <table>
+                <tr></tr>
+                <caption></caption>
+            </table>
+        </div>
+    </body>
+
+    <script>
+        var total = 25_000
+        var reactor = new Reactor(10, 0.1)
+        reactor.cells[0] = total
+
+        var root = document.getElementById('lattice')
+        var tr = root.querySelector('table tr')
+        var caption = root.querySelector('table caption')
+
+        var elements = []
+        reactor.cells.forEach(count => {
+            var cell = document.createElement('td')
+            var element = document.createElement('div')
+            elements.push(element)
+            cell.appendChild(element)
+            tr.appendChild(cell)
+        })
+
+        function render() {
+            reactor.cells.forEach((count, index) => {
+                elements[index].style.height = `${count * 100 / total}%`
+            })
+            caption.innerText = `t=${reactor.time.toExponential(3)} n=${reactor.steps / 1000n}k`
+        }
+
+        render()
+        function step() {
+            reactor.multistep(1000)
+            render()
+            if (reactor.time > 1000) clearInterval(interval)
+        }
+        var interval = setInterval(step, 10)
+
+    </script>
+</html>
