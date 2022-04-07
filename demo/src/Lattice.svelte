@@ -20,7 +20,10 @@
 <table>
   <tr>
     {#each reactor.cells as count}
-      <td><div style="height: {count * 100 / total}%;"/></td>
+      <td>
+        <div style="height: {count * 100 / total}%;"/>
+        <span>{count}</span>
+      </td>
     {/each}
   </tr>
   <caption>t={t} n={n}k</caption>
@@ -48,5 +51,14 @@
     right: 0;
     bottom: 0;
     height: 0%;
+  }
+  table tr td span {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    font-size: 70%;
+    text-align: center;
+    color: #999;
   }
 </style>
