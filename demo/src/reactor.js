@@ -1,5 +1,5 @@
 // Simple 1D lattice diffusion.
-class Reactor {
+export default class Reactor {
     constructor(cells, kD) {
         this.time = 0.0
         this.steps = 0n
