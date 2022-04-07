@@ -1,12 +1,20 @@
 # gillrocky
 
-An implementation of the [Gillespie algorithm](https://en.wikipedia.org/wiki/Gillespie_algorithm).
+An implementation of the [Gillespie algorithm](https://en.wikipedia.org/wiki/Gillespie_algorithm) in [Rust](https://www.rust-lang.org/).
 
 ## Example
 
 ```
-// @todo
+cargo build
+./target/debug/gillrocky
 ```
+```
+@todo
+```
+
+## See also
+
+* [Animated demo of algorithm](./demo/README.md)
 
 ## References
 
