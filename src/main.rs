@@ -46,9 +46,11 @@ impl Reactor {
     // Increment the reactor's total steps.
     self.steps += 1;
   }
+}
 
-  fn println(&self) {
-    println!("t: {}, n: {}", self.time, self.steps);
+impl std::fmt::Display for Reactor {
+  fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+    write!(f, "t: {}, n: {}", self.time, self.steps)
   }
 }
 
@@ -66,16 +68,17 @@ fn main() {
   println!("reactor example");
   let seed = nanotime();
   // let seed = 42;
+  println!("seed = {}", seed);
   let mut reactor = Reactor::new(seed);
-  reactor.println();
+  println!("{}", reactor);
 
   reactor.step();
-  reactor.println();
+  println!("{}", reactor);
 
   reactor.processes.push(Box::new(0.13));
   reactor.processes.push(Box::new(9.58));
   reactor.processes.push(Box::new(2.25));
 
   reactor.step();
-  reactor.println();
+  println!("{}", reactor);
 }
