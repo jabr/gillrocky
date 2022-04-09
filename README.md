@@ -6,7 +6,7 @@ An implementation of the [Gillespie algorithm](https://en.wikipedia.org/wiki/Gil
 
 ```
 cargo build
-./target/debug/gillrocky
+cargo run
 ```
 ```
 @todo
