@@ -1,4 +1,4 @@
-use lib::Process;
+use crate::lib::Process;
 
 impl Process for f64 {
   fn rate(&self) -> f64 { *self }
