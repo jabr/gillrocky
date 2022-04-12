@@ -11,7 +11,7 @@ pub struct Reactor {
   rng: oorandom::Rand64,
   steps: u64,
   time: f64,
-  pub processes: HashSet::<Box<dyn Process>>,
+  processes: HashSet::<Box<dyn Process>>,
 }
 
 impl Reactor {
@@ -24,15 +24,14 @@ impl Reactor {
     }
   }
 
-  pub fn add(&mut self, b: Box<dyn Process>) {
-    self.processes.insert(b);
+  pub fn add(&mut self, p: impl Process + 'static) {
+    self.processes.insert(Box::new(p));
   }
 
-  // pub fn remove(&self, _p: &dyn Process) {
-  //   // let b = Box::new(*p);
-  //   // self.processes.remove(&b);
-  //   println!("set count = {}", self.processes.len());
-  // }
+  pub fn remove(&self, _p: impl Process) {
+      // self.processes.remove(&Box::new(p));
+      // println!("set count = {}", self.processes.len());
+  }
 
   pub fn step(&mut self) {
     let pairs = self.processes.iter().map(|p| (p, p.rate()));
