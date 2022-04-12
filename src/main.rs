@@ -12,9 +12,9 @@ fn main() {
   reactor.step();
   println!("{}", reactor);
 
-  reactor.processes.push(Box::new(0.13));
-  reactor.processes.push(Box::new(9.58));
-  reactor.processes.push(Box::new(2.25));
+  reactor.add(Box::new(0.13));
+  reactor.add(Box::new(9.58));
+  reactor.add(Box::new(2.25));
 
   reactor.step();
   println!("{}", reactor);
