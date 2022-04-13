@@ -64,11 +64,22 @@ impl Reactor {
 }
 
 mod utils {
-  use std::fmt::{Display, Formatter, Result};
+  use std::fmt::{Display, Debug, Formatter, Result};
+  use super::{Reactor};
 
-  impl Display for super::Reactor {
+  impl Display for Reactor {
     fn fmt(&self, f: &mut Formatter) -> Result {
       write!(f, "t: {}, n: {}", self.time, self.steps)
+    }
+  }
+
+  impl Debug for Reactor {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+      write!(
+        f, "t: {}, n: {} [seq={}, processes={}]",
+        self.time, self.steps,
+        self.sequence, self.processes.len()
+      )
     }
   }
 }
