@@ -14,8 +14,3 @@ Then open in a browser:
 ```
 open http://localhost:1234
 ```
-
-![Rocket Gillespie](./src/icon.png)
-
-## Credits
-* Icons: [Selman Design](https://selman.nyc/)

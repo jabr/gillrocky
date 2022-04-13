@@ -1,5 +1,7 @@
 # gillrocky
 
+<img alt="Rocket Gillespie" title="Rocket Gillespie" src="./demo/src/icon.png" align="right" height="64px">
+
 An implementation of the [Gillespie algorithm](https://en.wikipedia.org/wiki/Gillespie_algorithm) in [Rust](https://www.rust-lang.org/).
 
 ## Example
@@ -23,3 +25,5 @@ cargo run
 ## License
 
 This project is licensed under the terms of the [MIT license](LICENSE.txt).
+
+Icon derived from work by [Selman Design](https://selman.nyc/).
