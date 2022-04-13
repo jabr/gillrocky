@@ -5,36 +5,39 @@ pub trait Process {
   fn perform(&self);
 }
 
-use std::collections::HashSet;
-
+use std::collections::HashMap;
 pub struct Reactor {
+  sequence: u64,
   rng: oorandom::Rand64,
   steps: u64,
   time: f64,
-  processes: HashSet::<Box<dyn Process>>,
+  processes: HashMap<u64, Box<dyn Process>>,
 }
 
 impl Reactor {
   pub fn new(seed: u128) -> Self {
     Self {
+      sequence: 0,
       rng: oorandom::Rand64::new(seed),
       steps: 0,
       time: 0.0,
-      processes: HashSet::new(),
+      processes: HashMap::new(),
     }
   }
 
-  pub fn add(&mut self, p: impl Process + 'static) {
-    self.processes.insert(Box::new(p));
+  pub fn add(&mut self, p: impl Process + 'static) -> u64 {
+    let id = self.sequence;
+    self.sequence += 1;
+    self.processes.insert(id, Box::new(p));
+    id
   }
 
-  pub fn remove(&self, _p: impl Process) {
-      // self.processes.remove(&Box::new(p));
-      // println!("set count = {}", self.processes.len());
+  pub fn remove(&mut self, id: u64) {
+    self.processes.remove(&id);
   }
 
   pub fn step(&mut self) {
-    let pairs = self.processes.iter().map(|p| (p, p.rate()));
+    let pairs = self.processes.values().map(|p| (p, p.rate()));
     let total_rate: f64 = pairs.clone().map(|(_,r)| r).sum();
 
     if total_rate > 0.0 {
@@ -57,21 +60,6 @@ impl Reactor {
 
     // Increment the reactor's total steps.
     self.steps += 1;
-  }
-}
-
-// Implement traits needed to put Process references in a HashSet.
-mod hash {
-  use std::hash::{Hash, Hasher};
-  use std::ptr::{eq, hash};
-  use super::Process;
-
-  impl Eq for Box<dyn Process> {}
-  impl PartialEq for Box<dyn Process> {
-    fn eq(&self, other: &Self) -> bool { eq(&self, &other) }
-  }
-  impl Hash for Box<dyn Process> {
-    fn hash<H: Hasher>(&self, state: &mut H) { hash(self, state) }
   }
 }
 

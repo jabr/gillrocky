@@ -13,13 +13,13 @@ fn main() {
   println!("{}", reactor);
 
   reactor.add(0.13);
-  reactor.add(9.58);
+  let pid = reactor.add(9.58);
   reactor.add(2.25);
 
   reactor.step();
   println!("{}", reactor);
 
-  reactor.remove(9.58);
+  reactor.remove(pid);
 
   reactor.step();
   println!("{}", reactor);
