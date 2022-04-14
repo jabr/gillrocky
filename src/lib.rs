@@ -2,7 +2,7 @@ extern crate oorandom;
 
 pub trait Process {
   fn rate(&self) -> f64;
-  fn perform(&self);
+  fn perform(&mut self);
 }
 
 use std::collections::HashMap;
@@ -37,8 +37,13 @@ impl Reactor {
   }
 
   pub fn step(&mut self) {
-    let pairs = self.processes.values().map(|p| (p, p.rate()));
-    let total_rate: f64 = pairs.clone().map(|(_,r)| r).sum();
+    let mut total_rate: f64 = 0.0;
+    let mut pairs = Vec::new();
+    for p in self.processes.values_mut() {
+      let r = p.rate();
+      total_rate += r;
+      pairs.push((p, r));
+    }
 
     if total_rate > 0.0 {
       // Select an elapsed time from the probability distribution.
