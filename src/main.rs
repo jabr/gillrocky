@@ -1,4 +1,5 @@
 mod lib;
+mod systems;
 mod utils;
 
 mod example {
@@ -32,4 +33,11 @@ mod example {
 
 fn main() {
   example::basic();
+
+  let mut sa = systems::idempotent::create(42, &[0.5, 2.0, 5.0]);
+  println!("sa -> r: {:?} c: {:?}", sa.0, sa.1.lock().unwrap().counts);
+  for _ in 0..10 {
+    sa.0.step();
+    println!("sa -> r: {:?} c: {:?}", sa.0, sa.1.lock().unwrap().counts);
+  }
 }

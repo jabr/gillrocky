@@ -81,7 +81,7 @@ mod utils {
   impl Debug for Reactor {
     fn fmt(&self, f: &mut Formatter) -> Result {
       write!(
-        f, "t: {}, n: {} [seq={}, processes={}]",
+        f, "t: {:.9}, n: {} [seq={}, processes={}]",
         self.time, self.steps,
         self.sequence, self.processes.len()
       )
