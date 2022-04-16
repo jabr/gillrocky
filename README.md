@@ -21,6 +21,7 @@ cargo run
 ## References
 
 * [Exact stochastic simulation of coupled chemical reactions](https://pubs.acs.org/doi/10.1021/j100540a008)
+* [PCG, A Better Random Number Generator](https://www.pcg-random.org/)
 
 ## License
 

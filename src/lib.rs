@@ -1,5 +1,5 @@
-extern crate oorandom;
-extern crate getrandom;
+extern crate oorandom; // PCG prng
+extern crate getrandom; // system entropy
 
 pub fn seed() -> u128 {
   let mut bytes = [0u8; 16];
@@ -12,21 +12,21 @@ pub fn seed() -> u128 {
   bytes.iter().fold(0u128, |a, b| a << 8 | (*b as u128))
 }
 
-pub trait Process {
-  fn rate(&self) -> f64;
-  fn perform(&mut self);
+pub trait Process<S> {
+  fn rate(&self, state: &S) -> f64;
+  fn perform(&mut self, state: &mut S);
 }
 
 use std::collections::BTreeMap;
-pub struct Reactor {
+pub struct Reactor<S> {
   sequence: u64,
   rng: oorandom::Rand64,
   steps: u64,
   time: f64,
-  processes: BTreeMap<u64, Box<dyn Process>>,
+  processes: BTreeMap<u64, Box<dyn Process<S>>>,
 }
 
-impl Reactor {
+impl<S> Reactor<S> {
   pub fn new(seed: u128) -> Self {
     Self {
       sequence: 0,
@@ -37,7 +37,7 @@ impl Reactor {
     }
   }
 
-  pub fn add(&mut self, p: impl Process + 'static) -> u64 {
+  pub fn add(&mut self, p: impl Process<S> + 'static) -> u64 {
     let id = self.sequence;
     self.sequence += 1;
     self.processes.insert(id, Box::new(p));
@@ -48,11 +48,11 @@ impl Reactor {
     self.processes.remove(&id);
   }
 
-  pub fn step(&mut self) {
+  pub fn step(&mut self, state: &mut S) {
     let mut total_rate: f64 = 0.0;
     let mut pairs = Vec::new();
     for p in self.processes.values_mut() {
-      let r = p.rate();
+      let r = p.rate(state);
       total_rate += r;
       pairs.push((p, r));
     }
@@ -65,7 +65,7 @@ impl Reactor {
       let mut target = self.rng.rand_float() * total_rate;
       for (process, rate) in pairs {
         if target < rate {
-          process.perform();
+          process.perform(state);
           break;
         }
         target -= rate;
@@ -84,13 +84,13 @@ mod utils {
   use std::fmt::{Display, Debug, Formatter, Result};
   use super::{Reactor};
 
-  impl Display for Reactor {
+  impl<S> Display for Reactor<S> {
     fn fmt(&self, f: &mut Formatter) -> Result {
       write!(f, "t: {}, n: {}", self.time, self.steps)
     }
   }
 
-  impl Debug for Reactor {
+  impl<S> Debug for Reactor<S> {
     fn fmt(&self, f: &mut Formatter) -> Result {
       write!(
         f, "t: {:.9}, n: {} [seq={}, processes={}]",
