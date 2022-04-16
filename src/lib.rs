@@ -5,13 +5,13 @@ pub trait Process {
   fn perform(&mut self);
 }
 
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 pub struct Reactor {
   sequence: u64,
   rng: oorandom::Rand64,
   steps: u64,
   time: f64,
-  processes: HashMap<u64, Box<dyn Process>>,
+  processes: BTreeMap<u64, Box<dyn Process>>,
 }
 
 impl Reactor {
@@ -21,7 +21,7 @@ impl Reactor {
       rng: oorandom::Rand64::new(seed),
       steps: 0,
       time: 0.0,
-      processes: HashMap::new(),
+      processes: BTreeMap::new(),
     }
   }
 
