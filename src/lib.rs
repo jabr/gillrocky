@@ -1,4 +1,16 @@
 extern crate oorandom;
+extern crate getrandom;
+
+pub fn seed() -> u128 {
+  let mut bytes = [0u8; 16];
+  if getrandom::getrandom(&mut bytes).is_err() {
+    // as a fallback, use the system time and process id...
+    use std::time::{SystemTime, UNIX_EPOCH};
+    let nanos = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos();
+    return nanos ^ std::process::id() as u128;
+  }
+  bytes.iter().fold(0u128, |a, b| a << 8 | (*b as u128))
+}
 
 pub trait Process {
   fn rate(&self) -> f64;

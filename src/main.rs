@@ -1,20 +1,24 @@
-mod lib;
+pub mod lib;
 mod systems;
-mod utils;
 
 fn seed() -> u128 {
-  let seed = 42;
-  // let seed = utils::nanotime();
-  println!("seed = {}", seed);
+  // let seed = 42;
+  let seed = lib::seed();
+  println!("seed = {:x}", seed);
   seed
 }
 
 pub mod example {
-  use super::lib::{Reactor};
+  use super::lib::{Reactor, Process};
   use super::systems;
   use super::seed;
 
   pub fn basic() {
+    impl Process for f64 {
+      fn rate(&self) -> f64 { *self }
+      fn perform(&mut self) { println!("chosen: {}", *self) }
+    }
+
     println!("reactor - basic example");
     let mut reactor = Reactor::new(seed());
     println!("{}", reactor);
