@@ -1,4 +1,4 @@
-use crate::lib;
+use crate::lib::{Reactor, Process};
 
 use std::sync::{Arc, Mutex, MutexGuard};
 pub struct Shared<T>(Arc<Mutex<T>>);
@@ -9,11 +9,15 @@ impl<T> Shared<T> {
 }
 
 pub mod idempotent {
-  use super::Shared;
-  use super::lib::{Reactor, Process};
+  use super::{Reactor, Process, Shared};
 
   pub struct State {
     pub counts: Vec<u64>,
+  }
+
+  use std::fmt::{Debug, Formatter, Result};
+  impl Debug for State {
+    fn fmt(&self, f: &mut Formatter) -> Result { write!(f, "{:?}", self.counts) }
   }
 
   struct IncrementingProcess {
@@ -41,6 +45,70 @@ pub mod idempotent {
       };
       reactor.add(p);
     }
+
+    (reactor, state)
+  }
+}
+
+pub mod dimer {
+  use super::{Reactor, Process, Shared};
+
+  pub struct State {
+    pub concentrations: Vec<u64>,
+  }
+
+  use std::fmt::{Debug, Formatter, Result};
+  impl Debug for State {
+    fn fmt(&self, f: &mut Formatter) -> Result { write!(f, "{:?}", self.concentrations) }
+  }
+
+  struct Reaction {
+    k: f64,
+    reactants: Vec<usize>,
+    products: Vec<usize>,
+    state: Shared<State>,
+  }
+
+  impl Process for Reaction {
+    fn rate(&self) -> f64 {
+      let state = self.state.using();
+      self.reactants.iter().fold(self.k, |rate, index| {
+        rate * (state.concentrations[*index] as f64)
+      })
+    }
+
+    fn perform(&mut self) {
+      let mut state = self.state.using();
+      for index in &self.reactants {
+        state.concentrations[*index] -= 1;
+      }
+      for index in &self.products {
+        state.concentrations[*index] += 1;
+      }
+    }
+  }
+
+  pub fn create(
+    seed: u128,
+    k_formation: f64, k_dissociation: f64,
+    concentrations: &[u64]
+  ) -> (Reactor, Shared<State>) {
+    let mut reactor = Reactor::new(seed);
+    let state = Shared::new(State { concentrations: Vec::from(concentrations) });
+
+    reactor.add(Reaction {
+      k: k_formation,
+      reactants: vec![0, 1],
+      products: vec![2],
+      state: state.clone(),
+    });
+
+    reactor.add(Reaction {
+      k: k_dissociation,
+      reactants: vec![2],
+      products: vec![0, 1],
+      state: state.clone(),
+    });
 
     (reactor, state)
   }

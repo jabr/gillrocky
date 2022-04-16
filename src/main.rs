@@ -35,17 +35,27 @@ pub mod example {
     println!("{:?}", reactor);
   }
 
-  pub fn idempotent() {
-    let mut sa = systems::idempotent::create(seed(), &[0.5, 2.0, 5.0]);
-    println!("sa -> r: {:?} c: {:?}", sa.0, sa.1.using().counts);
-    for _ in 0..9 {
-      sa.0.step();
-      println!("sa -> r: {:?} c: {:?}", sa.0, sa.1.using().counts);
+  fn run<T: std::fmt::Debug>(mut reactor: Reactor, state: systems::Shared<T>, steps: u32) {
+    println!("sa -> r: {:?} c: {:?}", reactor, state.using());
+    for _ in 0..steps {
+      reactor.step();
+      println!("sa -> r: {:?} c: {:?}", reactor, state.using());
     }
+  }
+
+  pub fn idempotent() {
+    let (reactor, state) = systems::idempotent::create(seed(), &[0.5, 2.0, 5.0]);
+    run(reactor, state, 9);
+  }
+
+  pub fn dimer() {
+    let (reactor, state) =systems::dimer::create(seed(), 2.0, 1.0, &[10, 10, 0]);
+    run(reactor, state, 99);
   }
 }
 
 fn main() {
-  // example::basic();
+  example::basic();
   example::idempotent();
+  example::dimer();
 }
