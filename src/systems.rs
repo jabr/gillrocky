@@ -11,13 +11,9 @@ impl<T> Shared<T> {
 pub mod idempotent {
   use super::{Reactor, Process, Shared};
 
+  #[derive(Debug)]
   pub struct State {
     pub counts: Vec<u64>,
-  }
-
-  use std::fmt::{Debug, Formatter, Result};
-  impl Debug for State {
-    fn fmt(&self, f: &mut Formatter) -> Result { write!(f, "{:?}", self.counts) }
   }
 
   struct IncrementingProcess {
@@ -53,13 +49,9 @@ pub mod idempotent {
 pub mod dimer {
   use super::{Reactor, Process, Shared};
 
+  #[derive(Debug)]
   pub struct State {
     pub concentrations: Vec<u64>,
-  }
-
-  use std::fmt::{Debug, Formatter, Result};
-  impl Debug for State {
-    fn fmt(&self, f: &mut Formatter) -> Result { write!(f, "{:?}", self.concentrations) }
   }
 
   struct Reaction {

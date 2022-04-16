@@ -40,10 +40,10 @@ pub mod example {
   }
 
   fn run<T: std::fmt::Debug>(mut reactor: Reactor, state: systems::Shared<T>, steps: u32) {
-    println!("sa -> r: {:?} c: {:?}", reactor, state.using());
+    println!("{:?} {:?}", reactor, state.using());
     for _ in 0..steps {
       reactor.step();
-      println!("sa -> r: {:?} c: {:?}", reactor, state.using());
+      println!("{:?} {:?}", reactor, state.using());
     }
   }
 
