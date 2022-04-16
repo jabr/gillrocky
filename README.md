@@ -6,12 +6,31 @@ An implementation of the [Gillespie algorithm](https://en.wikipedia.org/wiki/Gil
 
 ## Example
 
-```
+```sh
 cargo build
 cargo run
 ```
-```
-@todo
+
+```rust
+use gillrocky::{Reactor, Process};
+
+struct State { ... }
+struct Reaction { ... }
+
+impl Process<State> for Reaction {
+  fn rate(&self, state: &State) -> f64 { ... }
+  fn perform(&mut self, state: &mut State) { ... }
+}
+
+let mut reactor = Reactor::new(seed);
+reactor.add(Reaction { ... });
+reactor.add(Reaction { ... });
+
+let state = State { ... };
+loop {
+  reactor.step(&mut state);
+  // output: reactor.time, state.*, etc
+}
 ```
 
 ## See also
