@@ -21,8 +21,8 @@ use std::collections::BTreeMap;
 pub struct Reactor<S> {
   sequence: u64,
   rng: oorandom::Rand64,
-  steps: u64,
-  time: f64,
+  pub steps: u64,
+  pub time: f64,
   processes: BTreeMap<u64, Box<dyn Process<S>>>,
 }
 

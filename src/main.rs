@@ -48,19 +48,31 @@ pub mod example {
     }
   }
 
-  pub fn idempotent() {
-    let (reactor, state) = systems::idempotent::create(seed(), &[0.5, 2.0, 5.0]);
+  pub fn constant() {
+    let (reactor, state) = systems::constant::create(seed(), &[0.5, 2.0, 5.0]);
     run(reactor, state, 9);
   }
 
   pub fn dimer() {
-    let (reactor, state) =systems::dimer::create(seed(), 2.0, 1.0, &[10, 10, 0]);
+    let (reactor, state) = systems::dimer::create(seed(), 2.0, 1.0, &[10, 10, 0]);
     run(reactor, state, 99);
+  }
+
+  pub fn diffusion(periodic: bool) {
+    let (mut reactor, mut state) = systems::diffusion::create(seed(), 5.0, 10, 10_000, periodic);
+    loop {
+      reactor.step(&mut state);
+      println!("t={:.9} n={} >> {}", reactor.time, reactor.steps, state);
+      // if reactor.time > 10.0 { break; }
+      if reactor.steps > 100 { break; }
+    }
   }
 }
 
 fn main() {
   example::basic();
-  example::idempotent();
+  example::constant();
   example::dimer();
+  example::diffusion(false);
+  example::diffusion(true);
 }

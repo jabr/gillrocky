@@ -4,6 +4,8 @@
 
 An implementation of the [Gillespie algorithm](https://en.wikipedia.org/wiki/Gillespie_algorithm) in [Rust](https://www.rust-lang.org/).
 
+> a discrete, stochastic process instead of a continuous, deterministic process<sup><small><a href="#ref-a">[a]</a></small></sup>
+
 ## Example
 
 ```sh
@@ -39,7 +41,7 @@ loop {
 
 ## References
 
-* [Exact stochastic simulation of coupled chemical reactions](https://pubs.acs.org/doi/10.1021/j100540a008)
+* [Exact stochastic simulation of coupled chemical reactions](https://pubs.acs.org/doi/10.1021/j100540a008) <sup id="ref-a"><small>[a]</small></sup>
 * [PCG, A Better Random Number Generator](https://www.pcg-random.org/)
 
 ## License

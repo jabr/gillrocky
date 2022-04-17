@@ -1,6 +1,7 @@
+extern crate ndarray;
 use crate::lib::{Reactor, Process};
 
-pub mod idempotent {
+pub mod constant {
   use super::{Reactor, Process};
 
   #[derive(Debug)]
@@ -83,6 +84,59 @@ pub mod dimer {
       reactants: vec![2],
       products: vec![0, 1],
     });
+
+    (reactor, state)
+  }
+}
+
+pub mod diffusion {
+  use super::{Reactor, Process};
+  use ndarray::{Array, Dim};
+
+  type State = Array<u64, Dim<[usize; 2]>>;
+
+  struct Diffusion {
+    k: f64,
+    from: (usize, usize),
+    to: (usize, usize),
+  }
+
+  impl Process<State> for Diffusion {
+    fn rate(&self, state: &State) -> f64 {
+      self.k * state[self.from] as f64
+    }
+
+    fn perform(&mut self, state: &mut State) {
+      state[self.from] -= 1;
+      state[self.to] += 1;
+    }
+  }
+
+  pub fn create(
+    seed: u128,
+    k_diffusion: f64, size: usize,
+    start: u64, periodic_boundary: bool
+  ) -> (Reactor<State>, State) {
+    let mut reactor = Reactor::new(seed);
+    let mut state = Array::zeros((1,size));
+    state[(0,0)] = start;
+
+    for index in 1..size-1 {
+      reactor.add(Diffusion { k: k_diffusion, from: (0,index), to: (0,index-1) });
+      reactor.add(Diffusion { k: k_diffusion, from: (0,index), to: (0,index+1) });
+    }
+
+    // boundaries:
+    reactor.add(Diffusion { k: k_diffusion, from: (0,0), to: (0,1) });
+    reactor.add(Diffusion { k: k_diffusion, from: (0,size-1), to: (0,size-2) });
+    if periodic_boundary {
+      reactor.add(Diffusion { k: k_diffusion, from: (0,0), to: (0,size-1) });
+      reactor.add(Diffusion { k: k_diffusion, from: (0,size-1), to: (0,0) });
+    } else {
+      // default to fixed (ie "bounce off wall" back to same location)
+      reactor.add(Diffusion { k: k_diffusion, from: (0,0), to: (0,0) });
+      reactor.add(Diffusion { k: k_diffusion, from: (0,size-1), to: (0,size-1) });
+    }
 
     (reactor, state)
   }
