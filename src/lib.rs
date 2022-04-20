@@ -17,6 +17,7 @@ pub trait Process<S> {
   fn perform(&mut self, state: &mut S);
 }
 
+// Use a deterministically ordered map to ensure results are repeatable.
 use std::collections::BTreeMap;
 pub struct Reactor<S> {
   sequence: u64,
@@ -38,6 +39,7 @@ impl<S> Reactor<S> {
   }
 
   pub fn add(&mut self, p: impl Process<S> + 'static) -> u64 {
+    // Add the process using a unique id from the sequence counter as its key.
     let id = self.sequence;
     self.sequence += 1;
     self.processes.insert(id, Box::new(p));
@@ -51,6 +53,7 @@ impl<S> Reactor<S> {
   pub fn step(&mut self, state: &mut S) {
     let mut total_rate: f64 = 0.0;
     let mut pairs = Vec::new();
+    // Build a list of process/rate pairs, and sum rates for the total across all pairs.
     for p in self.processes.values_mut() {
       let r = p.rate(state);
       total_rate += r;

@@ -13,6 +13,7 @@ pub mod example {
   use super::systems;
   use super::seed;
 
+  // @todo: convert these to tests.
   pub fn basic() {
     struct Static; // unit struct for an unchanging state
     impl<S> Process<S> for f64 {
@@ -34,6 +35,7 @@ pub mod example {
     reactor.step(&mut Static);
     println!("{:?}", reactor);
 
+    // Try removing one of the processes.
     reactor.remove(pid);
 
     reactor.step(&mut Static);

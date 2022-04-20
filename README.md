@@ -37,7 +37,7 @@ loop {
 
 ## See also
 
-* [Animated demo of algorithm](./demo/README.md)
+* [Animated demo of algorithm](./demo/)
 
 ## References
 

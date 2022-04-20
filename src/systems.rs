@@ -1,6 +1,7 @@
 extern crate ndarray;
 use crate::lib::{Reactor, Process};
 
+// Constant rate processes that just keep a count of actions.
 pub mod constant {
   use super::{Reactor, Process};
 
@@ -34,6 +35,7 @@ pub mod constant {
   }
 }
 
+// Simulate the `A + B → AB` dimerization reaction.
 pub mod dimer {
   use super::{Reactor, Process};
 
@@ -50,6 +52,7 @@ pub mod dimer {
 
   impl Process<State> for Reaction {
     fn rate(&self, state: &State) -> f64 {
+      // e.g. `k[A][B]`, `k[AB]`, etc
       self.reactants.iter().fold(self.k, |rate, index| {
         rate * (state.concentrations[*index] as f64)
       })
@@ -75,12 +78,14 @@ pub mod dimer {
 
     reactor.add(Reaction {
       k: k_formation,
+      // combine elements 0+1 to 2
       reactants: vec![0, 1],
       products: vec![2],
     });
 
     reactor.add(Reaction {
       k: k_dissociation,
+      // split element 2 to 0+1
       reactants: vec![2],
       products: vec![0, 1],
     });
@@ -89,10 +94,12 @@ pub mod dimer {
   }
 }
 
+// Lattice diffusion.
 pub mod diffusion {
   use super::{Reactor, Process};
   use ndarray::{Array, Dim};
 
+  // Use a 2D array of element counts. @todo: 3D, N-D?, multiple elements
   type State = Array<u64, Dim<[usize; 2]>>;
 
   struct Diffusion {
@@ -118,18 +125,22 @@ pub mod diffusion {
     start: u64, periodic_boundary: bool
   ) -> (Reactor<State>, State) {
     let mut reactor = Reactor::new(seed);
-    let mut state = Array::zeros((1,size));
+    let mut state = Array::zeros((1,size)); // just support 1D for now
+    // put all starting elements in the first lattice square
     state[(0,0)] = start;
 
+    // generate reactor processes for 1D:
+    // @todo: support higher dimensions, multiple elements
     for index in 1..size-1 {
       reactor.add(Diffusion { k: k_diffusion, from: (0,index), to: (0,index-1) });
       reactor.add(Diffusion { k: k_diffusion, from: (0,index), to: (0,index+1) });
     }
 
-    // boundaries:
+    // handling boundaries (edges/walls of the lattice):
     reactor.add(Diffusion { k: k_diffusion, from: (0,0), to: (0,1) });
     reactor.add(Diffusion { k: k_diffusion, from: (0,size-1), to: (0,size-2) });
     if periodic_boundary {
+      // wrap the boundary around to the other end:
       reactor.add(Diffusion { k: k_diffusion, from: (0,0), to: (0,size-1) });
       reactor.add(Diffusion { k: k_diffusion, from: (0,size-1), to: (0,0) });
     } else {
